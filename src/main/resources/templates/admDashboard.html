@@ -2,74 +2,461 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Panel - Democratic Voting System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 24px 0;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .header h1 {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+        
+        .admin-badge {
+            background: #fee2e2;
+            color: #ef4444;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.55em;
+            font-weight: 600;
+        }
+        
+        .header .username {
+            color: #ef4444;
+            font-weight: 700;
+        }
+        
+        .btn-logout {
+            background: #ef4444;
+            color: #ffffff;
+            padding: 10px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .btn-logout:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+        
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-bottom: 32px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .card-header {
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 24px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .card-header h2 {
+            font-size: 1.25em;
+            font-weight: 700;
+            margin: 0;
+            color: #111827;
+        }
+        
+        .card-header-icon {
+            font-size: 1.4em;
+        }
+        
+        .card-body {
+            padding: 32px;
+        }
+        
+        .add-nominee-form {
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 0.95em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: #111827;
+            margin-bottom: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nominees-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .nominees-table thead {
+            background: #f9fafb;
+        }
+        
+        .nominees-table th {
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85em;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .nominees-table th:first-child {
+            border-top-left-radius: 12px;
+        }
+        
+        .nominees-table th:last-child {
+            border-top-right-radius: 12px;
+        }
+        
+        .nominees-table tbody tr {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #ffffff;
+        }
+        
+        .nominees-table tbody tr:hover {
+            background: #f9fafb;
+            transform: scale(1.005);
+        }
+        
+        .nominees-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .nominee-number {
+            background: #fee2e2;
+            color: #ef4444;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .nominee-name {
+            font-weight: 600;
+            color: #111827;
+            font-size: 1em;
+        }
+        
+        .vote-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1em;
+            display: inline-block;
+        }
+        
+        .btn-delete {
+            background: #ef4444;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: #ffffff;
+            padding: 12px 24px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 32px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state-icon {
+            font-size: 3.5em;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state-title {
+            font-size: 1.4em;
+            color: #111827;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .empty-state-text {
+            color: #6b7280;
+            font-size: 0.95em;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .container {
+                padding: 40px 20px;
+            }
+            
+            .add-nominee-form {
+                flex-direction: column;
+            }
+            
+            .form-group {
+                width: 100%;
+            }
+            
+            .nominees-table {
+                font-size: 0.9em;
+            }
+            
+            .nominees-table th,
+            .nominees-table td {
+                padding: 12px 10px;
+            }
+        }
+    </style>
+    
+    <script th:if="${error != null}">
+        window.addEventListener('DOMContentLoaded', function() {
+            alert('[[${error}]]');
+        });
+    </script>
+
+    <script th:if="${success != null}">
+        window.addEventListener('DOMContentLoaded', function() {
+            alert('[[${success}]]');
+        });
+    </script>
 </head>
 <body>
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Admin Panel - <span th:text="${session.adminName}"></span></h2>
-        <a th:href="@{/}" class="btn btn-outline-danger">Logout</a>
+    <div class="header">
+        <div class="header-content">
+            <h1>
+                <span class="admin-badge">ADMIN</span>
+                <span class="username" th:text="${session.adminName}">Admin</span>
+            </h1>
+            <a th:href="@{/}" class="btn-logout">Logout</a>
+        </div>
     </div>
 
-    <!-- Add New Nominee Form -->
-	<div class="card mb-4">
-	    <div class="card-header bg-primary text-white">
-	        <h5>Add New Nominee</h5>
-	    </div>
-	    <div class="card-body">
-	        <form th:action="@{/admin/add-nominee}" method="post" onsubmit="return validateNominee()">
-	            <div class="row g-3 align-items-center">
-	                <div class="col-auto">
-	                    <input type="text" id="nomineeName" name="name" class="form-control" 
-	                         placeholder="Enter nominee name" required />
-	                </div>
-	                <div class="col-auto">
-	                    <button type="submit" class="btn btn-success">Add Nominee</button>
-	                </div>
-	            </div>
-	        </form>
-	    </div>
-	</div>
+    <div class="container">
+        <!-- Add New Nominee Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-icon">➕</span>
+                <h2>Add New Nominee</h2>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/admin/add-nominee}" method="post" onsubmit="return validateNominee()" class="add-nominee-form">
+                    <div class="form-group">
+                        <label for="nomineeName">Nominee Name</label>
+                        <input type="text" id="nomineeName" name="name" class="form-control" 
+                               placeholder="Enter nominee name" required />
+                    </div>
+                    <button type="submit" class="btn btn-success">Add Nominee</button>
+                </form>
+            </div>
+        </div>
 
-    <!-- JavaScript Alert for Error Messages -->
-    <script th:if="${error != null}">
-        alert('[[${error}]]');
+        <!-- Nominees List Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-icon">📊</span>
+                <h2>Current Nominees & Vote Count</h2>
+            </div>
+            <div class="card-body">
+                <div th:if="${nominees != null and #lists.size(nominees) > 0}">
+                    <table class="nominees-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nominee Name</th>
+                                <th>Total Votes</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="nominee, iter : ${nominees}">
+                                <td>
+                                    <span class="nominee-number" th:text="${iter.index + 1}">1</span>
+                                </td>
+                                <td>
+                                    <span class="nominee-name" th:text="${nominee.name}">Nominee Name</span>
+                                </td>
+                                <td>
+                                    <span class="vote-badge" th:text="${nominee.voteCount}">0</span>
+                                </td>
+                                <td>
+                                    <form th:action="@{/admin/delete-nominee}" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" th:value="${nominee.id}"/>
+                                        <button type="submit" class="btn-delete" 
+                                                onclick="return confirm('Are you sure you want to delete this nominee? This action cannot be undone.')">
+                                            🗑️ Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div th:if="${nominees == null or #lists.isEmpty(nominees)}" class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-title">No Nominees Yet</div>
+                    <div class="empty-state-text">Add your first nominee using the form above.</div>
+                </div>
+            </div>
+        </div>
+
+        <a th:href="@{/}" class="btn btn-secondary">← Back to Home</a>
+    </div>
+
+    <script>
+        function validateNominee() {
+            const nameInput = document.getElementById('nomineeName');
+            const name = nameInput.value.trim();
+            
+            if (name.length < 2) {
+                alert('Nominee name must be at least 2 characters long.');
+                return false;
+            }
+            
+            if (name.length > 100) {
+                alert('Nominee name is too long. Maximum 100 characters.');
+                return false;
+            }
+            
+            return true;
+        }
     </script>
-
-    <!-- JavaScript Alert for Success Messages -->
-    <script th:if="${success != null}">
-        alert('[[${success}]]');
-    </script>
-
-    <!-- Nominees List -->
-    <h4>Current Nominees & Vote Count</h4>
-    <table class="table table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Nominee Name</th>
-                <th>Total Votes</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="nominee, iter : ${nominees}">
-                <td th:text="${iter.index + 1}"></td>
-                <td th:text="${nominee.name}"></td>
-                <td th:text="${nominee.voteCount}"></td>
-                <td>
-                    <form th:action="@{/admin/delete-nominee}" method="post" style="display:inline;">
-                        <input type="hidden" name="id" th:value="${nominee.id}"/>
-                        <button type="submit" class="btn btn-sm btn-danger"
-                                onclick="return confirm('Delete this nominee?')">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a th:href="@{/}" class="btn btn-secondary">← Back to Home</a>
-</div>
 </body>
 </html>
